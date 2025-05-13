@@ -1,7 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import React, { useState } from "react";
-import Calendar from "react-calendar";
+const Calendar = dynamic(
+  () => import("react-calendar").then((mod) => mod.default),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[300px] w-full bg-gray-100 animate-pulse rounded-md" />
+    ),
+  }
+);
 import "react-calendar/dist/Calendar.css";
 
 type ValuePiece = Date | null;
@@ -34,7 +43,7 @@ const EventCalendar = () => {
 
   return (
     <div className="bg-white p-4 rounded-md">
-      <Calendar onChange={onChange} value={value} />
+      <Calendar onChange={onChange} value={value}  />
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold my-4">Events</h1>
       </div>

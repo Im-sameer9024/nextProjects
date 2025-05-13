@@ -6,14 +6,7 @@ import { Textarea } from '../components/ui/textarea'
 const Home = () => {
   return (
     <div>
-      Hello
-      <Input/>
-      <Button variant="elevated">
-        Hello
-      </Button>
-      <Textarea>
-        
-      </Textarea>
+     
     </div>
   )
 }

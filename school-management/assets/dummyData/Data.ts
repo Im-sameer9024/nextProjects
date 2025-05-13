@@ -1,6 +1,8 @@
-import { Home, 
-  Users, 
-  GraduationCap, 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  Home,
+  Users,
+  GraduationCap,
   UserCircle,
   BookOpen,
   School,
@@ -12,9 +14,17 @@ import { Home,
   Megaphone,
   User,
   Settings,
-  LogOut} from 'lucide-react'
+  LogOut,
+} from "lucide-react";
+import teacher1 from "../images/teacher1.jpg";
+import teacher2 from "../images/teacher2.jpg";
+import teacher3 from "../images/teacher3.jpg";
+import teacher4 from "../images/teacher4.jpg";
+import teacher5 from "../images/teacher5.jpg";
+import teacher6 from "../images/teacher6.jpeg";
 
-  import { Icon } from 'lucide-react';
+import { Icon } from "lucide-react";
+import { StaticImageData } from "next/image";
 
 interface itemProps {
   icon: typeof Icon | string;
@@ -33,7 +43,7 @@ export const menuItems: menuItemsProps[] = [
     title: "MENU",
     items: [
       {
-        icon:Home,
+        icon: Home,
         label: "Home",
         href: "/",
         visible: ["admin", "teacher", "student", "parent"],
@@ -143,19 +153,31 @@ export const menuItems: menuItemsProps[] = [
   },
 ];
 
-
 // TEMPORARY DATA
 
 export const role = "admin";
 
-export const teachersData = [
+//-----------------list/teachers----------------
+
+export interface teacherDataProps {
+  id: number;
+  teacherId: string;
+  name: string;
+  email: string;
+  photo: StaticImageData;
+  phone: string;
+  subjects: string[];
+  classes: string[];
+  address: string;
+}
+
+export const teachersData: teacherDataProps[] = [
   {
     id: 1,
     teacherId: "1234567890",
     name: "John Doe",
     email: "john@doe.com",
-    photo:
-      "https://images.pexels.com/photos/2888150/pexels-photo-2888150.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher1,
     phone: "1234567890",
     subjects: ["Math", "Geometry"],
     classes: ["1B", "2A", "3C"],
@@ -166,8 +188,7 @@ export const teachersData = [
     teacherId: "1234567890",
     name: "Jane Doe",
     email: "jane@doe.com",
-    photo:
-      "https://images.pexels.com/photos/936126/pexels-photo-936126.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher2,
     phone: "1234567890",
     subjects: ["Physics", "Chemistry"],
     classes: ["5A", "4B", "3C"],
@@ -178,8 +199,7 @@ export const teachersData = [
     teacherId: "1234567890",
     name: "Mike Geller",
     email: "mike@geller.com",
-    photo:
-      "https://images.pexels.com/photos/428328/pexels-photo-428328.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher6,
     phone: "1234567890",
     subjects: ["Biology"],
     classes: ["5A", "4B", "3C"],
@@ -190,8 +210,7 @@ export const teachersData = [
     teacherId: "1234567890",
     name: "Jay French",
     email: "jay@gmail.com",
-    photo:
-      "https://images.pexels.com/photos/1187765/pexels-photo-1187765.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher4,
     phone: "1234567890",
     subjects: ["History"],
     classes: ["5A", "4B", "3C"],
@@ -202,8 +221,7 @@ export const teachersData = [
     teacherId: "1234567890",
     name: "Jane Smith",
     email: "jane@gmail.com",
-    photo:
-      "https://images.pexels.com/photos/1102341/pexels-photo-1102341.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher3,
     phone: "1234567890",
     subjects: ["Music", "History"],
     classes: ["5A", "4B", "3C"],
@@ -214,8 +232,7 @@ export const teachersData = [
     teacherId: "1234567890",
     name: "Anna Santiago",
     email: "anna@gmail.com",
-    photo:
-      "https://images.pexels.com/photos/712513/pexels-photo-712513.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher2,
     phone: "1234567890",
     subjects: ["Physics"],
     classes: ["5A", "4B", "3C"],
@@ -226,8 +243,7 @@ export const teachersData = [
     teacherId: "1234567890",
     name: "Allen Black",
     email: "allen@black.com",
-    photo:
-      "https://images.pexels.com/photos/1438081/pexels-photo-1438081.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher1,
     phone: "1234567890",
     subjects: ["English", "Spanish"],
     classes: ["5A", "4B", "3C"],
@@ -238,8 +254,7 @@ export const teachersData = [
     teacherId: "1234567890",
     name: "Ophelia Castro",
     email: "ophelia@castro.com",
-    photo:
-      "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher4,
     phone: "1234567890",
     subjects: ["Math", "Geometry"],
     classes: ["5A", "4B", "3C"],
@@ -250,8 +265,7 @@ export const teachersData = [
     teacherId: "1234567890",
     name: "Derek Briggs",
     email: "derek@briggs.com",
-    photo:
-      "https://images.pexels.com/photos/842980/pexels-photo-842980.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher5,
     phone: "1234567890",
     subjects: ["Literature", "English"],
     classes: ["5A", "4B", "3C"],
@@ -262,8 +276,7 @@ export const teachersData = [
     teacherId: "1234567890",
     name: "John Glover",
     email: "john@glover.com",
-    photo:
-      "https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher6,
     phone: "1234567890",
     subjects: ["Biology"],
     classes: ["5A", "4B", "3C"],
@@ -271,14 +284,27 @@ export const teachersData = [
   },
 ];
 
-export const studentsData = [
+//-----------------list/students----------------
+
+export interface studentDataProps {
+  id: number;
+  studentId: string;
+  name: string;
+  email: string;
+  photo: StaticImageData;
+  phone: string;
+  grade: number;
+  class: string;
+  address: string;
+}
+
+export const studentsData: studentDataProps[] = [
   {
     id: 1,
     studentId: "1234567890",
     name: "John Doe",
     email: "john@doe.com",
-    photo:
-      "https://images.pexels.com/photos/2888150/pexels-photo-2888150.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher1,
     phone: "1234567890",
     grade: 5,
     class: "1B",
@@ -289,8 +315,7 @@ export const studentsData = [
     studentId: "1234567890",
     name: "Jane Doe",
     email: "jane@doe.com",
-    photo:
-      "https://images.pexels.com/photos/936126/pexels-photo-936126.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher2,
     phone: "1234567890",
     grade: 5,
     class: "5A",
@@ -301,8 +326,7 @@ export const studentsData = [
     studentId: "1234567890",
     name: "Mike Geller",
     email: "mike@geller.com",
-    photo:
-      "https://images.pexels.com/photos/428328/pexels-photo-428328.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher3,
     phone: "1234567890",
     grade: 5,
     class: "5A",
@@ -313,8 +337,7 @@ export const studentsData = [
     studentId: "1234567890",
     name: "Jay French",
     email: "jay@gmail.com",
-    photo:
-      "https://images.pexels.com/photos/1187765/pexels-photo-1187765.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher4,
     phone: "1234567890",
     grade: 5,
     class: "5A",
@@ -325,8 +348,7 @@ export const studentsData = [
     studentId: "1234567890",
     name: "Jane Smith",
     email: "jane@gmail.com",
-    photo:
-      "https://images.pexels.com/photos/1102341/pexels-photo-1102341.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher5,
     phone: "1234567890",
     grade: 5,
     class: "5A",
@@ -337,8 +359,7 @@ export const studentsData = [
     studentId: "1234567890",
     name: "Anna Santiago",
     email: "anna@gmail.com",
-    photo:
-      "https://images.pexels.com/photos/712513/pexels-photo-712513.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher6,
     phone: "1234567890",
     grade: 5,
     class: "5A",
@@ -349,8 +370,7 @@ export const studentsData = [
     studentId: "1234567890",
     name: "Allen Black",
     email: "allen@black.com",
-    photo:
-      "https://images.pexels.com/photos/1438081/pexels-photo-1438081.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher1,
     phone: "1234567890",
     grade: 5,
     class: "5A",
@@ -361,8 +381,7 @@ export const studentsData = [
     studentId: "1234567890",
     name: "Ophelia Castro",
     email: "ophelia@castro.com",
-    photo:
-      "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher3,
     phone: "1234567890",
     grade: 5,
     class: "5A",
@@ -373,8 +392,7 @@ export const studentsData = [
     studentId: "1234567890",
     name: "Derek Briggs",
     email: "derek@briggs.com",
-    photo:
-      "https://images.pexels.com/photos/842980/pexels-photo-842980.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher5,
     phone: "1234567890",
     grade: 5,
     class: "5A",
@@ -385,8 +403,7 @@ export const studentsData = [
     studentId: "1234567890",
     name: "John Glover",
     email: "john@glover.com",
-    photo:
-      "https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    photo: teacher5,
     phone: "1234567890",
     grade: 5,
     class: "5A",
@@ -394,7 +411,18 @@ export const studentsData = [
   },
 ];
 
-export const parentsData = [
+//-------------------list/parents-----------------
+
+export interface parentsDataProps {
+  id: number;
+  name: string;
+  students: string[];
+  email?: string;
+  phone: string;
+  address: string;
+}
+
+export const parentsData: parentsDataProps[] = [
   {
     id: 1,
     name: "John Doe",
@@ -477,6 +505,14 @@ export const parentsData = [
   },
 ];
 
+//-------------------list/subjects-----------------
+
+export interface subjectsDataProps {
+  id: number;
+  name: string;
+  teachers: string[];
+}
+
 export const subjectsData = [
   {
     id: 1,
@@ -530,7 +566,17 @@ export const subjectsData = [
   },
 ];
 
-export const classesData = [
+//-------------------list/classes-----------------
+
+export interface classesDataProps {
+  id: number;
+  name: string;
+  capacity: number;
+  grade: number;
+  supervisor: string;
+}
+
+export const classesData: classesDataProps[] = [
   {
     id: 1,
     name: "1A",
@@ -567,7 +613,7 @@ export const classesData = [
     supervisor: "Iva Frank",
   },
   {
-    id: 5,
+    id: 6,
     name: "5B",
     capacity: 20,
     grade: 5,
@@ -602,6 +648,15 @@ export const classesData = [
     supervisor: "Ophelia Marsh",
   },
 ];
+
+//--------------------/list/lessons--------------------
+
+export interface lessonsDataProps {
+  id: number;
+  subject: string;
+  class: string;
+  teacher: string;
+}
 
 export const lessonsData = [
   {
@@ -666,7 +721,17 @@ export const lessonsData = [
   },
 ];
 
-export const examsData = [
+//--------------------/list/exams--------------------
+
+export interface examsDataProps {
+  id: number;
+  subject: string;
+  class: string;
+  teacher: string;
+  date: string;
+}
+
+export const examsData: examsDataProps[] = [
   {
     id: 1,
     subject: "Math",
@@ -739,7 +804,17 @@ export const examsData = [
   },
 ];
 
-export const assignmentsData = [
+//-------------------/list/assignments--------------------
+
+export interface assignmentsDataProps {
+  id: number;
+  subject: string;
+  class: string;
+  teacher: string;
+  dueDate: string;
+}
+
+export const assignmentsData: assignmentsDataProps[] = [
   {
     id: 1,
     subject: "Math",
@@ -812,7 +887,20 @@ export const assignmentsData = [
   },
 ];
 
-export const resultsData = [
+//-------------------/list/results--------------------
+
+export interface resultsDataProps {
+  id: number;
+  subject: string;
+  class: string;
+  teacher: string;
+  student: string;
+  date: string;
+  type: string;
+  score: number;
+}
+
+export const resultsData: resultsDataProps[] = [
   {
     id: 1,
     subject: "Math",
@@ -915,7 +1003,18 @@ export const resultsData = [
   },
 ];
 
-export const eventsData = [
+//-------------------/list/events--------------------
+
+export interface eventsDataProps {
+  id: number;
+  title: string;
+  class: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+}
+
+export const eventsData: eventsDataProps[] = [
   {
     id: 1,
     title: "Lake Trip",
@@ -998,7 +1097,16 @@ export const eventsData = [
   },
 ];
 
-export const announcementsData = [
+//-------------------/list/announcements--------------------
+
+export interface announcementsDataProps {
+  id: number;
+  title: string;
+  class: string;
+  date: string;
+}
+
+export const announcementsData: announcementsDataProps[] = [
   {
     id: 1,
     title: "About 4A Math Test",
@@ -1060,7 +1168,6 @@ export const announcementsData = [
     date: "2025-01-01",
   },
 ];
-
 
 // YOU SHOULD CHANGE THE DATES OF THE EVENTS TO THE CURRENT DATE TO SEE THE EVENTS ON THE CALENDAR
 export const calendarEvents = [
@@ -1203,3 +1310,4 @@ export const calendarEvents = [
     end: new Date(2025, 6, 16, 14, 45),
   },
 ];
+
