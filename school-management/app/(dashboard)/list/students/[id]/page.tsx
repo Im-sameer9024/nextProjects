@@ -1,12 +1,49 @@
-import Image from 'next/image';
-import React from 'react'
-import BigCalendar from '../../../../../components/BIgCalendar';
-import Link from 'next/link';
-import Announcements from '../../../../../components/Announcements';
-import Teacher1 from '../../../../../assets/images/teacher1.jpg'
-import { Calendar, Calendar1Icon,  HeartPlus, Library, Mail, Notebook, Phone, School } from 'lucide-react';
-import Performance from '../../../../../components/Performance';
-const SingleStudentPage = () => {
+import Image from "next/image";
+import React from "react";
+import Link from "next/link";
+import Announcements from "../../../../../components/Announcements";
+import Teacher1 from "../../../../../assets/images/teacher1.jpg";
+import {
+  Calendar,
+  Calendar1Icon,
+  HeartPlus,
+  Library,
+  Mail,
+  Notebook,
+  Phone,
+  School,
+} from "lucide-react";
+import Performance from "../../../../../components/Performance";
+// import getRoleForServerSide from "@/lib/role";
+import prisma from "@/lib/prisma";
+import BigCalendarContainer from "@/components/BIgCalendarContainer";
+
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+const SingleStudentPage = async ({ params }: Props) => {
+  // const { role } = await getRoleForServerSide();
+
+  const student = await prisma.student.findUnique({
+    where: { id: (await params).id },
+    include: {
+      class: {
+        include: {
+          _count: {
+            select: {
+              lessons: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if(!student) {
+    return <div>Student not found</div>
+  }
+
   return (
     <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
       {/* LEFT */}
@@ -110,7 +147,7 @@ const SingleStudentPage = () => {
         {/* BOTTOM */}
         <div className="mt-4 bg-white rounded-md p-4 h-[800px]">
           <h1>Teacher&apos;s Schedule</h1>
-          <BigCalendar />
+         <BigCalendarContainer type="classId" id={student.class.id} />
         </div>
       </div>
 
@@ -122,7 +159,10 @@ const SingleStudentPage = () => {
             <Link className="p-3 rounded-md bg-sky-50" href="/">
               Student&apos;s Lessons
             </Link>
-            <Link className="p-3 rounded-md bg-purple-50" href="/">
+            <Link
+              className="p-3 rounded-md bg-purple-50"
+              href={`/list/teachers?classId=${2}`}
+            >
               Student&apos;s Teachers
             </Link>
             <Link className="p-3 rounded-md bg-yellow-50" href="/">
@@ -141,6 +181,6 @@ const SingleStudentPage = () => {
       </div>
     </div>
   );
-}
+};
 
-export default SingleStudentPage
+export default SingleStudentPage;

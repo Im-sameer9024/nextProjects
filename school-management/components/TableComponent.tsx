@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import {
   Table,
@@ -7,20 +6,23 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+interface Column {
+  header: string;
+  accessor: string;
+  classes?: string;
+}
 
-const TableComponent = ({
+interface TableComponentProps<T> {
+  columns: Column[];
+  renderRow: (item: T) => React.ReactNode;
+  data: T[];
+}
+
+const TableComponent = <T,>({
   columns,
   renderRow,
   data,
-}: {
-  columns: {
-    header: string;
-    accessor: string;
-    classes?: string;
-  }[];
-  renderRow: (item: any) => React.ReactNode;
-  data: any[];
-}) => {
+}: TableComponentProps<T>) => {
   return (
     <Table>
       <TableHeader>
@@ -32,7 +34,17 @@ const TableComponent = ({
           ))}
         </TableRow>
       </TableHeader>
-      <TableBody>{data.map((item) => renderRow(item))}</TableBody>
+      <TableBody>
+        {data.length > 0 ? (
+          data.map((item) => renderRow(item))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={columns.length} className="text-center py-4">
+              No announcements found
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
     </Table>
   );
 };

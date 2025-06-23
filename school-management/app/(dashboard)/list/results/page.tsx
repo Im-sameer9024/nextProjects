@@ -1,153 +1,129 @@
-import {
-  ArrowUpDown,
-  Edit,
-  ListFilter,
-  Plus,
-  Search,
-  Trash,
-} from "lucide-react";
-import React from "react";
-import { Input } from "../../../../components/ui/input";
-import {
-  resultsData,
-  resultsDataProps,
-  role,
-} from "../../../../assets/dummyData/Data";
-import { TableCell, TableRow } from "../../../../components/ui/table";
-import PaginationComponent from "../../../../components/PaginationComponent";
-import Link from "next/link";
-import TableComponent from "../../../../components/TableComponent";
+import Result from "@/components/resultComponent/Result";
+import prisma from "@/lib/prisma";
+import getRoleForServerSide from "@/lib/role";
+import { ITEM_PER_PAGE } from "@/lib/setting";
+import { Prisma } from "@prisma/client";
 
-interface columnsProps {
-  header: string;
-  accessor: string;
-  classes?: string;
-}
+type Props = {
+  searchParams?: Promise<{ [key: string]: string } | undefined>;
+};
 
-const columns: columnsProps[] = [
-  {
-    header: "Subject Name",
-    accessor: "name",
-  },
-  {
-    header: "Student",
-    accessor: "student",
-  },
-  {
-    header: "Score",
-    accessor: "score",
-    classes: "hidden md:table-cell",
-  },
-  {
-    header: "Teacher",
-    accessor: "teacher",
-    classes: "hidden md:table-cell",
-  },
-  {
-    header: "Class",
-    accessor: "class",
-    classes: "hidden md:table-cell",
-  },
-  {
-    header: "Date",
-    accessor: "date",
-    classes: "hidden md:table-cell",
-  },
-  {
-    header: "Actions",
-    accessor: "action",
-  },
-];
-  ;
+const ResultsListPage = async ({ searchParams }: Props) => {
+  const { page, ...queryParams } = (await searchParams) ?? {};
 
-const ResultsListPage = () => {
-  const renderRow = (item: resultsDataProps) => (
-    <TableRow
-      key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
-    >
-      <TableCell className=" md:table-cell">{item.subject}</TableCell>
-      <TableCell>{item.student}</TableCell>
-      <TableCell className="hidden md:table-cell">{item.score}</TableCell>
-      <TableCell className="hidden md:table-cell">{item.teacher}</TableCell>
-      <TableCell className="hidden md:table-cell">{item.class}</TableCell>
-      <TableCell className="hidden md:table-cell">{item.date}</TableCell>
+  const { role, currentUserId } = await getRoleForServerSide();
+  const p = page ? parseInt(page) : 1;
 
-      <TableCell>
-        {/* Detail Button */}
-        <Link href={`/list/teachers/${item.id}`}>
-          <button className="p-2 rounded-full hover:bg-gray-100 transition-colors relative">
-            <Edit className="text-gray-600 w-5 h-5" />
-          </button>
-        </Link>
+  const query: Prisma.ResultWhereInput = {};
 
-        {/* Notifications Button */}
-        {role === "admin" && (
-          <button className="p-2 rounded-full hover:bg-gray-100 transition-colors relative">
-            <Trash className="text-gray-600 w-5 h-5" />
-          </button>
-        )}
-      </TableCell>
-    </TableRow>
-  );
+  // role based conditions for query
+
+  switch (role) {
+    case "admin":
+      break;
+    case "teacher":
+      query.OR = [
+        { exam: { lesson: { teacherId: currentUserId! } } },
+        { assignment: { lesson: { teacherId: currentUserId! } } },
+      ];
+      break;
+
+    case "student":
+      query.studentId = currentUserId!;
+      break;
+
+    case "parent":
+      query.student = {
+        parentId: currentUserId!,
+      };
+      break;
+    default:
+      break;
+  }
+
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value !== undefined && value !== "") {
+        switch (key) {
+          case "classId":
+            query.assignment = {
+              lesson: {
+                classId: parseInt(value),
+              },
+            };
+            break;
+          case "search":
+            query.OR = [
+              { exam: { title: { contains: value, mode: "insensitive" } } },
+              { student: { name: { contains: value, mode: "insensitive" } } },
+            ];
+            break;
+            default:
+            break;
+        }
+      }
+    }
+  }
+
+  const [dataRes, count] = await prisma.$transaction([
+    prisma.result.findMany({
+      where: query,
+      include: {
+        student: {
+          select: {
+            name: true,
+          },
+        },
+        exam: {
+          include: {
+            lesson: {
+              select: {
+                class: { select: { name: true } },
+                teacher: { select: { name: true } },
+              },
+            },
+          },
+        },
+        assignment: {
+          include: {
+            lesson: {
+              select: {
+                class: { select: { name: true } },
+                teacher: { select: { name: true } },
+              },
+            },
+          },
+        },
+      },
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
+    }),
+    prisma.result.count({ where: query }),
+  ]);
+
+  const data = dataRes
+    .map((item) => {
+      const assessment = item.assignment ?? item.exam;
+
+      if (!assessment) return null;
+
+      const isExam = "startTime" in assessment;
+
+      return {
+        id: item.id,
+        title: assessment.title,
+        student: item.student.name,
+        score: item.score,
+        teacher: assessment.lesson.teacher.name,
+        class: assessment.lesson.class.name,
+        startTime: isExam ? assessment.startTime : null,
+      };
+    })
+    .filter((item): item is NonNullable<typeof item> => item !== null);
 
   return (
     <div className=" bg-white p-4 rounded-md flex-1 m-4 ">
-      {/*------------ Top ---------- */}
-      <div className=" flex justify-between items-center">
-        <h2 className=" hidden md:block text-lg font-semibold">All Results</h2>
-        <div className=" flex md:flex-row md:w-fit w-full flex-col gap-4 items-center">
-          {/*---------- search bar section --------- */}
-          <div className="flex items-center relative w-full ">
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-              <Search className="text-gray-400 w-5 h-5" aria-hidden="true" />
-            </div>
-            <Input
-              type="text"
-              placeholder="Search..."
-              className=" w-full rounded-full pl-10 pr-4 py-2 border-gray-300 focus-visible:ring-2 focus-visible:ring-primary/50"
-              aria-label="Search"
-            />
-          </div>
-
-          {/*---------- filter icons ---------- */}
-          <div className="flex items-center gap-2 ml-auto">
-            {/* filter Button */}
-            <button
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
-              aria-label="Sort"
-            >
-              <ListFilter className="text-gray-600 w-5 h-5" />
-            </button>
-
-            {/* price filter Button */}
-            <button
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
-              aria-label="up-down"
-            >
-              <ArrowUpDown className="text-gray-600 w-5 h-5" />
-            </button>
-
-            {/* Plus Button */}
-            <button
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
-              aria-label="up-down"
-            >
-              <Plus className="text-gray-600 w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/*-------------- list section ------------ */}
-      <div>
-        <TableComponent
-          columns={columns}
-          renderRow={renderRow}
-          data={resultsData}
-        />
-        <PaginationComponent />
-      </div>
+      <Result data={data} page={p} count={count} role={role} />
     </div>
   );
 };

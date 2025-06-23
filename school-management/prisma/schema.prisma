@@ -13,6 +13,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+
 model Admin {
   id        String   @id
   username  String   @unique
@@ -28,7 +30,7 @@ model Student {
   email       String       @unique
   phone       String       @unique
   address     String
-  img         String
+  img         String?
   bloodType   String
   gender      UserGender
   createdAt   DateTime     @default(now())
@@ -41,6 +43,12 @@ model Student {
   attendances Attendance[]
   results     Result[]
   birthday    DateTime
+
+
+  @@index([parentId])
+  @@index([classId])
+  @@index([gradeId])
+  @@index([email])
 }
 
 model Teacher {
@@ -58,6 +66,8 @@ model Teacher {
   lessons   Lesson[]
   classes   Class[]
   birthday  DateTime
+
+  @@index([email])
 }
 
 model Parent {
@@ -69,6 +79,8 @@ model Parent {
   address   String
   createdAt DateTime  @default(now())
   students  Student[]
+
+  @@index([email])
 }
 
 model Grade {
@@ -90,6 +102,9 @@ model Class {
   grade         Grade          @relation(fields: [gradeId], references: [id])
   event         Event[]
   announcements Announcement[]
+
+  @@index([supervisorId])
+  @@index([gradeId])
 }
 
 model Subject {
@@ -114,6 +129,11 @@ model Lesson {
   exams       Exam[]
   assignments Assignment[]
   attendance  Attendance[]
+
+  @@index([subjectId])
+  @@index([classId])
+  @@index([teacherId])
+  @@index([day, startTime])
 }
 
 model Exam {
@@ -177,6 +197,13 @@ model Announcement {
 
   classId Int?
   class   Class? @relation(fields: [classId], references: [id])
+}
+
+enum UserRole {
+  ADMIN
+  TEACHER
+  STUDENT
+  PARENT
 }
 
 enum UserGender {

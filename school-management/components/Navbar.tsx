@@ -3,8 +3,17 @@ import { Input } from "./ui/input";
 import { Bell, MessageCircle, Search } from "lucide-react";
 import Image from "next/image";
 import Logo from "@/assets/images/logo.png";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 
-const Navbar = () => {
+const Navbar = async () => {
+  // Default to 'guest' if no role is found
+
   return (
     <nav className="w-full p-2 flex items-center justify-between bg-white shadow-sm">
       {/* Search Section */}
@@ -19,7 +28,13 @@ const Navbar = () => {
           aria-label="Search"
         />
       </div>
-
+      <SignedOut>
+        <SignInButton />
+        <SignUpButton />
+      </SignedOut>
+      <SignedIn>
+        <UserButton />
+      </SignedIn>
       {/* User Controls Section */}
       <div className="flex items-center gap-4 ml-auto">
         {/* Messages Button */}
@@ -47,8 +62,8 @@ const Navbar = () => {
         {/* Profile Dropdown */}
         <div className="flex items-center gap-2">
           <div className="hidden md:flex flex-col text-right">
-            <p className="font-medium text-gray-900">John Doe</p>
-            <p className="text-xs text-gray-500">Admin</p>
+            <p className="font-medium text-gray-900">{"sfks"}</p>
+            <p className="text-xs text-gray-500">{"guest"}</p>
           </div>
           <div className="relative">
             <button className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50">

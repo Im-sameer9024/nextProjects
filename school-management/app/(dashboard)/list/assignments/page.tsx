@@ -1,140 +1,106 @@
-import {
-  ArrowUpDown,
-  Edit,
-  ListFilter,
-  Plus,
-  Search,
-  Trash,
-} from "lucide-react";
-import React from "react";
-import { Input } from "../../../../components/ui/input";
-import {
-    assignmentsData,
-    assignmentsDataProps,
-  role,
-} from "../../../../assets/dummyData/Data";
-import { TableCell, TableRow } from "../../../../components/ui/table";
-import PaginationComponent from "../../../../components/PaginationComponent";
-import Link from "next/link";
-import TableComponent from "../../../../components/TableComponent";
+import Assignment from "@/components/assignmentComponent/Assignment";
+import prisma from "@/lib/prisma";
+import getRoleForServerSide from "@/lib/role";
+import { ITEM_PER_PAGE } from "@/lib/setting";
+import { Prisma } from "@prisma/client";
 
-interface columnsProps {
-  header: string;
-  accessor: string;
-  classes?: string;
-}
+type searchParamsProps = {
+  searchParams?: Promise<{ [key: string]: string } | undefined>;
+};
 
-const columns: columnsProps[] = [
-  {
-    header: "Subject Name",
-    accessor: "name",
-  },
-  {
-    header: "Class",
-    accessor: "class",
-  },
-  {
-    header: "Teacher",
-    accessor: "teacher",
-    classes: "hidden md:table-cell",
-  },
-  {
-    header: "Due Date",
-    accessor: "dueDate",
-    classes: "hidden md:table-cell",
-  },
-  {
-    header: "Actions",
-    accessor: "action",
-  },
-];
+const AssignmentListPage = async ({ searchParams }: searchParamsProps) => {
+  const { page, ...queryParams } = (await searchParams) ?? {};
 
-const AssignmentListPage = () => {
-  const renderRow = (item: assignmentsDataProps) => (
-    <TableRow
-      key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
-    >
-      <TableCell className=" md:table-cell">{item.subject}</TableCell>
-      <TableCell>{item.class}</TableCell>
-      <TableCell className="hidden md:table-cell">{item.teacher}</TableCell>
-      <TableCell className="hidden md:table-cell">{item.dueDate}</TableCell>
+  const p = page ? parseInt(page) : 1;
 
-      <TableCell>
-        {/* Detail Button */}
-        <Link href={`/list/teachers/${item.id}`}>
-          <button className="p-2 rounded-full hover:bg-gray-100 transition-colors relative">
-            <Edit className="text-gray-600 w-5 h-5" />
-          </button>
-        </Link>
+  const { role, currentUserId } = await getRoleForServerSide();
 
-        {/* Notifications Button */}
-        {role === "admin" && (
-          <button className="p-2 rounded-full hover:bg-gray-100 transition-colors relative">
-            <Trash className="text-gray-600 w-5 h-5" />
-          </button>
-        )}
-      </TableCell>
-    </TableRow>
-  );
+  const query: Prisma.AssignmentWhereInput = {};
+  query.lesson = {};
+
+  // role based query and set the id based on role
+
+  switch (role) {
+    case "admin":
+      break;
+    case "teacher":
+      query.lesson = {
+        teacherId: currentUserId,
+      };
+      break;
+    case "student":
+      query.lesson.class = {
+        students: {
+          some: {
+            id: currentUserId,
+          },
+        },
+      };
+      break;
+    case "parent":
+      query.lesson.class = {
+        students: {
+          some: {
+            parentId: currentUserId,
+          },
+        },
+      };
+      break;
+    default:
+      break;
+  }
+
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value === undefined && value) {
+        switch (key) {
+          case "classId":
+            query.lesson.classId = parseInt(value);
+            break;
+          case "teacherId":
+            query.lesson.teacherId = value;
+            break;
+          case "search":
+            query.lesson.subject = {
+              name: { contains: value, mode: "insensitive" },
+            };
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
+
+  const [data, count] = await prisma.$transaction([
+    prisma.assignment.findMany({
+      where: query,
+      orderBy: {
+        lesson: {
+          subject: {
+            name: "asc",
+          },
+        },
+      },
+      include: {
+        lesson: {
+          select: {
+            endTime: true,
+            class: { select: { name: true } },
+            teacher: { select: { name: true } },
+            subject: { select: { name: true } },
+          },
+        },
+      },
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
+    }),
+    prisma.assignment.count({ where: query }),
+  ]);
 
   return (
     <div className=" bg-white p-4 rounded-md flex-1 m-4 ">
-      {/*------------ Top ---------- */}
-      <div className=" flex justify-between items-center">
-        <h2 className=" hidden md:block text-lg font-semibold">All Assignment</h2>
-        <div className=" flex md:flex-row md:w-fit w-full flex-col gap-4 items-center">
-          {/*---------- search bar section --------- */}
-          <div className="flex items-center relative w-full ">
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-              <Search className="text-gray-400 w-5 h-5" aria-hidden="true" />
-            </div>
-            <Input
-              type="text"
-              placeholder="Search..."
-              className=" w-full rounded-full pl-10 pr-4 py-2 border-gray-300 focus-visible:ring-2 focus-visible:ring-primary/50"
-              aria-label="Search"
-            />
-          </div>
-
-          {/*---------- filter icons ---------- */}
-          <div className="flex items-center gap-2 ml-auto">
-            {/* filter Button */}
-            <button
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
-              aria-label="Sort"
-            >
-              <ListFilter className="text-gray-600 w-5 h-5" />
-            </button>
-
-            {/* price filter Button */}
-            <button
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
-              aria-label="up-down"
-            >
-              <ArrowUpDown className="text-gray-600 w-5 h-5" />
-            </button>
-
-            {/* Plus Button */}
-            <button
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
-              aria-label="up-down"
-            >
-              <Plus className="text-gray-600 w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/*-------------- list section ------------ */}
-      <div>
-        <TableComponent
-          columns={columns}
-          renderRow={renderRow}
-          data={assignmentsData}
-        />
-        <PaginationComponent />
-      </div>
+      <Assignment data={data} page={p} count={count} role={role} />
     </div>
   );
 };
