@@ -1,7 +1,7 @@
 import React from "react";
 import UserCard from "../../../components/UserCard";
 import FinanceChart from "../../../components/FinanceChart";
-import EventCalendar from "../../../components/EventCalendar";
+// import EventCalendar from "../../../components/EventCalendar";
 import Announcements from "../../../components/Announcements";
 import CountChartContainer from "@/components/CountChartContainer";
 import AttendanceChartContainer from "@/components/AttendanceChartContainer";
