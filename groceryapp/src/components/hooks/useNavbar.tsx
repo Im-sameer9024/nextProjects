@@ -8,7 +8,6 @@ const useNavbar = () => {
   const path = usePathname();
   const router = useRouter();
 
-  "hello"
 
   const handleNavigation = useCallback(
     (url: string) => {

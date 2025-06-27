@@ -17,11 +17,12 @@ const geistMono = Geist_Mono({
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
-})
+});
 
 export const metadata: Metadata = {
   title: "FreshCart - Online Grocery Delivery & Marketplace",
-  description: "Shop fresh groceries, fruits, vegetables, dairy, and household essentials online. Fast delivery, best prices, and wide selection at FreshCart.",
+  description:
+    "Shop fresh groceries, fruits, vegetables, dairy, and household essentials online. Fast delivery, best prices, and wide selection at FreshCart.",
   keywords: [
     "online grocery",
     "grocery delivery",
@@ -32,8 +33,6 @@ export const metadata: Metadata = {
     "food delivery",
     "ecommerce grocery",
   ],
- 
-  
 };
 
 export default function RootLayout({
@@ -50,9 +49,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${outfit.variable} ${geistMono.variable} antialiased`}
       >
         <ToolProvider>
-          <Navbar/>
+          <Navbar />
           {children}
-          </ToolProvider>
+        </ToolProvider>
       </body>
     </html>
   );
