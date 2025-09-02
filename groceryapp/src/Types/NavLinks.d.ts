@@ -1,8 +1,5 @@
-
-
-
-export interface NavLinksTypesProps{
-    id:number,
-    text:string,
-    url:string,
+export interface NavLinksTypesProps {
+  id: number;
+  text: string;
+  url: string;
 }

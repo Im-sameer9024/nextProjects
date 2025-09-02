@@ -13,83 +13,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMIN
-  USER
-}
-
-model User {
-  id            String    @id @default(cuid())
-  name          String
-  email         String    @unique
-  emailVerified DateTime?
-  password      String?
-  role          Role      @default(USER)
-  accounts      Account[]
-  sessions      Session[]
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id])
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id])
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
 model Category {
-  id       String    @id @default(cuid())
-  title    String
-  desc     String
-  color    String
-  img      String
-  slug     String    @unique
-  createAt DateTime  @default(now())
+  id          String   @id @default(uuid())
+  title       String   @unique
+  description String
+  slug        String   @unique
+  img         String
+  createdAt   DateTime @default(now())
+
   products Product[]
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  title       String
+  id          String   @id @default(uuid())
+  title       String   @unique
   description String
   img         String?
-  price       Decimal
-  isFeatured  Boolean  @default(false)
-  options     Json[]
-  catSlug     String
-  category    Category @relation(fields: [catSlug], references: [slug])
+  bestSeller  Boolean  @default(false)
+  options     String[]
+  createdAt   DateTime @default(now())
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  Order      Order?   @relation(fields: [orderId], references: [id])
+  orderId    String?
+}
+
+enum orderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELLED
 }
 
 model Order {
-  id        String  @id @default(cuid())
-  price     Decimal
-  products  Json[]
-  status    String
-  intent_id String? @unique
+  id        String      @id @default(uuid())
+  price     Decimal     @db.Decimal(10, 2)
+  intent_id String      @unique // stripe id is here
+  total     Float
+  status    orderStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+
+  products Product[]
 }

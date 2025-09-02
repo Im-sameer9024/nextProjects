@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import ToolProvider from "@/provider/ToolProvider";
 import Navbar from "@/components/common/Navbar";
+import Footer from "@/components/common/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
   return (
     <html lang="en">
       <head>
@@ -51,6 +53,7 @@ export default function RootLayout({
         <ToolProvider>
           <Navbar />
           {children}
+          <Footer/>
         </ToolProvider>
       </body>
     </html>
