@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
-import { prisma } from "../../../../lib/prisma";
+import { prisma } from "../../../lib/prisma";
 
 export const GET = async() => {
   try {
 
-    const categories = await prisma.category.findMany()
+    const categories = await prisma.category.findMany({
+      include:{
+        products:true
+      }
+    })
 
     return NextResponse.json(
       {
@@ -22,7 +26,6 @@ export const GET = async() => {
         success: false,
         status: 500,
         message: "Failed to fetch categories",
-        categories: [],
       },
       {
         status: 500,

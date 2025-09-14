@@ -43,7 +43,7 @@ const Header = () => {
   };
 
   return (
-    <section className="lg:px-18 md:px-16 sm:px-14 px-4 py-4 w-full flex items-center justify-between overflow-hidden">
+    <section className=" w-full flex items-center justify-between overflow-hidden">
       <div className="relative w-full">
         {/* Background Images with Fade In Animation */}
         <motion.div

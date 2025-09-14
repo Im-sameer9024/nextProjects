@@ -1,13 +1,30 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NavbarLinks from "./NavbarLinks";
 import { FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { Variants } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
+import UserProfile from "./UserProfile";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(true);
+
+  const { status } = useSession();
+
+  const pathname = usePathname();
+  const authPaths = ["/auth/signup", "/auth/login", "/auth/error"];
+
+  useEffect(() => {
+    // Check if current path is an auth path
+    const shouldHideNavbar = authPaths.some((path) =>
+      pathname.startsWith(path)
+    );
+    setShowNavbar(!shouldHideNavbar);
+  }, [pathname]); // Add pathname as dependency
 
   // Animation variants for sidebar
   const sidebarVariants: Variants = {
@@ -49,9 +66,16 @@ const Navbar = () => {
     };
   }, [isMobileMenuOpen]);
 
+  // Don't render navbar on auth pages
+  if (!showNavbar) {
+    return null;
+  }
+
   return (
     <>
-      <div className="w-full mx-auto py-4 lg:px-10 md:px-6 sm:px-4 px-2 flex items-center justify-between bg-white shadow-sm relative z-50">
+      <div
+        className={`w-full mx-auto py-4 lg:px-10 md:px-6 sm:px-4 px-2 flex items-center justify-between bg-white shadow-sm relative z-50`}
+      >
         {/* Website logo */}
         <div className="font-mono text-2xl font-semibold bg-gradient-to-r from-green-600 via-green-300 to-green-600 text-transparent bg-clip-text inline-block">
           MASSIMO
@@ -61,15 +85,21 @@ const Navbar = () => {
         <div className="hidden md:block">
           <NavbarLinks />
         </div>
+       
 
         {/* Desktop orders and carts - Hidden on mobile */}
         <div className="hidden md:flex items-center gap-4">
-          <button className="bg-green-600 px-4 py-1 text-white rounded-md hover:scale-95 ease-in-out duration-300 hover:cursor-pointer">
-            Login
-          </button>
           <button className="flex items-center gap-2 bg-gray-300 p-2 text-white rounded-full hover:scale-95 ease-in-out duration-300 hover:cursor-pointer ">
             <FiShoppingCart />
           </button>
+
+          {status === "authenticated" ? (
+            <UserProfile />
+          ) : (
+            <button className="bg-green-600 px-4 py-1 text-white rounded-md hover:scale-95 ease-in-out duration-300 hover:cursor-pointer">
+              Login
+            </button>
+          )}
         </div>
 
         {/* Mobile menu button - Visible only on mobile */}
